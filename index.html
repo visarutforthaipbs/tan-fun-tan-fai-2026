@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ทันฝุ่นทันไฟ - Tan Fun Tan Fai</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['DB HelveThaiX', 'sans-serif'],
+              heading: ['DB HelveThaiX', 'sans-serif'],
+              body: ['DB HelveThaiX', 'sans-serif'],
+            },
+            colors: {
+              // 3 Main Colors: #F15A24, #1A1A1A, #FFFFFF
+              brand: {
+                orange: '#F15A24', // Primary Accent (Main Color 1)
+                active: '#D14010', // Hover/Active (Darker Orange)
+                alert: '#FEF0EA',  // Light Orange Tint (10%)
+                black: '#1A1A1A',  // Primary Text (Main Color 2)
+                grey: '#8C8C8C',   // Secondary Text (50% Black)
+                smoke: '#F5F5F5',  // Page Background (Off-White)
+                white: '#FFFFFF',  // Card White (Main Color 3)
+              },
+              // AQI Standard Colors
+              pmGreen: '#00E400',
+              pmYellow: '#FFFF00',
+              pmOrange: '#FF7E00',
+              pmRed: '#FF0000',
+              pmPurple: '#8F3F97',
+              pmMaroon: '#7E0023',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'DB HelveThaiX', sans-serif;
+        background-color: #F5F5F5; /* Smoke White */
+        color: #1A1A1A; /* Text Black */
+      }
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'DB HelveThaiX', sans-serif;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+      }
+      .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "recharts": "https://esm.sh/recharts@^3.7.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.564.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

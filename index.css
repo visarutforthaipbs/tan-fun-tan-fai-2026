@@ -1,0 +1,91 @@
+/* Custom fonts */
+@font-face {
+  font-family: 'DB HelveThaiX';
+  src: url('/font/dbhelvethaicax-webfont.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DB HelveThaiX';
+  src: url('/font/dbhelvethaicaxmed-webfont.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DB HelveThaiX';
+  src: url('/font/dbhelvethaicaxbd-webfont.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Leaflet Popup Customization */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.leaflet-popup-tip-container {
+  display: none;
+}
+
+/* Custom Marker Pulse */
+@keyframes marker-pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.marker-pin-teal {
+  background-color: #1A1A1A;
+  border: 2px solid white;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  width: 30px;
+  height: 30px;
+}
+
+.marker-pin-orange {
+  background-color: #F15A24;
+  border: 2px solid white;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  width: 30px;
+  height: 30px;
+}
+
+/* Custom styles for Tan Fun Tan Fai */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.delay-75 {
+  animation-delay: 75ms;
+}
+
+.delay-150 {
+  animation-delay: 150ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
