@@ -31,19 +31,21 @@ const ActionPage: React.FC = () => {
             </div>
 
             {/* Action Stats Cards */}
-            <div className="max-w-4xl mx-auto px-6 -mt-10 relative z-20">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
-                    <div className="bg-brand-white rounded-xl p-6 shadow-xl border border-gray-100 text-center">
-                        <div className="text-2xl font-bold text-brand-orange font-heading">3 โครงการ</div>
-                        <div className="text-xs text-brand-grey font-medium uppercase tracking-wider mt-1">ต้องการการสนับสนุน</div>
-                    </div>
-                    <div className="bg-brand-white rounded-xl p-6 shadow-xl border border-gray-100 text-center">
-                        <div className="text-2xl font-bold text-brand-black font-heading">50 อาสา</div>
-                        <div className="text-xs text-brand-grey font-medium uppercase tracking-wider mt-1">ที่กำลังเปิดรับสมัคร</div>
-                    </div>
-                    <div className="bg-brand-white rounded-xl p-6 shadow-xl border border-gray-100 text-center">
-                        <div className="text-2xl font-bold text-brand-black font-heading">15,000+</div>
-                        <div className="text-xs text-brand-grey font-medium uppercase tracking-wider mt-1">รายชื่อร่วมลงนาม</div>
+            <div className="bg-brand-white">
+                <div className="max-w-4xl mx-auto px-6 -mt-10 relative z-20">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
+                        <div className="bg-brand-white rounded-xl p-6 shadow-xl border border-gray-100 text-center">
+                            <div className="text-2xl font-bold text-brand-orange font-heading">3 โครงการ</div>
+                            <div className="text-xs text-brand-grey font-medium uppercase tracking-wider mt-1">ต้องการการสนับสนุน</div>
+                        </div>
+                        <div className="bg-brand-white rounded-xl p-6 shadow-xl border border-gray-100 text-center">
+                            <div className="text-2xl font-bold text-brand-black font-heading">50 อาสา</div>
+                            <div className="text-xs text-brand-grey font-medium uppercase tracking-wider mt-1">ที่กำลังเปิดรับสมัคร</div>
+                        </div>
+                        <div className="bg-brand-white rounded-xl p-6 shadow-xl border border-gray-100 text-center">
+                            <div className="text-2xl font-bold text-brand-black font-heading">15,000+</div>
+                            <div className="text-xs text-brand-grey font-medium uppercase tracking-wider mt-1">รายชื่อร่วมลงนาม</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -52,7 +54,7 @@ const ActionPage: React.FC = () => {
             <GetInvolved />
 
             {/* Citizen Innovation Section */}
-            <div className="bg-gradient-to-b from-brand-white to-brand-smoke/30 py-10">
+            <div className="bg-brand-white py-10">
                 <CitizenInnovation />
             </div>
         </div>

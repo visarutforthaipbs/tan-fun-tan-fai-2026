@@ -67,9 +67,14 @@ export const GetInvolved: React.FC = () => {
                                 ? 'สนับสนุนอุปกรณ์ป้องกันและสวัสดิการให้เจ้าหน้าที่และอาสาสมัครดับไฟป่าที่ต้องทำงานในพื้นที่เสี่ยง'
                                 : 'ระดมทุนซื้อ "เครื่องเป่าลม" และ "หน้ากาก N95" ให้ชาวบ้านและเจ้าหน้าที่เพื่อใช้ในการทำแนวกันไฟและดับไฟป่า'}
                         </p>
-                        <button className="text-brand-active font-bold flex items-center gap-2 hover:gap-3 transition-all font-heading text-sm">
-                            {isNewcomer ? 'ดูช่องทางการสนับสนุน' : 'สมทบทุนอุปกรณ์'} <ArrowRight size={16} />
-                        </button>
+                        <a
+                            href="https://www.mirror.or.th/volunteers.php?m=vol"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-brand-orange font-bold flex items-center gap-2 hover:gap-3 transition-all font-heading text-sm inline-flex"
+                        >
+                            ดูความคืบหน้า <ArrowRight size={16} />
+                        </a>
                     </motion.div>
 
                     {/* Project 2 */}
@@ -88,7 +93,7 @@ export const GetInvolved: React.FC = () => {
                                 : 'ต้องการอาสาสมัคร 50 คน ร่วมทำแนวกันไฟที่ดอยสุเทพ ช่วงเดือนธันวาคม-มกราคม ก่อนฤดูไฟจะมาถึง'}
                         </p>
                         <a
-                            href="http://www.aecth.org/Article/Detail/137282"
+                            href="https://communityfire.fund/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-brand-orange font-bold flex items-center gap-2 hover:gap-3 transition-all font-heading text-sm inline-flex"
