@@ -2,6 +2,10 @@
     "framework": "vite",
     "rewrites": [
         {
+            "source": "/api/dust",
+            "destination": "https://warroom.pro/api/dust_proxy.php"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }

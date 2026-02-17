@@ -1,38 +1,23 @@
 import { AQIData, ForecastItem } from '../types';
 import { LOCATION_IMAGES } from '../data';
 
-// GISTDA "Check Foon" API (Thai Government - Envilink)
-// https://envilink.go.th/dataset/pm2-5
-const GISTDA_LOCATION_URL = 'https://pm25.gistda.or.th/rest/getPm25byLocation';
-const GISTDA_PROVINCE_URL = 'https://pm25.gistda.or.th/rest/getPm25byProvince';
+// ศูนย์ข้อมูลการเปลี่ยนแปลงภูมิอากาศ (CCDC) — daily updated, 900+ stations nationwide
+// Proxied through /api/dust to avoid CORS issues
+const DUST_API_URL = '/api/dust';
 
 // Default coordinates (Chiang Mai city center)
 const DEFAULT_LAT = 18.7883;
 const DEFAULT_LON = 98.9853;
 
-// ------- Interfaces for raw GISTDA data -------
-interface GISTDALocationResponse {
-  status: number;
-  errMsg: string;
-  data: {
-    pm25: number;
-    graphHistory24hrs: [number, string][]; // [pm25value, ISO timestamp]
-  };
-}
-
-interface GISTDAProvinceItem {
-  pv_tn: string;      // Province name in Thai
-  pv_en: string;      // Province name in English
-  pv_idn: number;     // Province ID
-  pm25: number;        // Current PM2.5
-  dt: string;          // ISO timestamp
-  pm25Avg24hr: number; // 24-hour average
-}
-
-interface GISTDAProvinceResponse {
-  status: number;
-  errMsg: string;
-  data: GISTDAProvinceItem[];
+// ------- Interfaces for Warroom API data -------
+export interface WarroomStation {
+  source: string;   // e.g. "CCDC", "Air4Thai", "NTAQHI"
+  name: string;     // Station name in Thai
+  lat: number;
+  lon: number;
+  pm25: number;
+  temp: number | null;
+  humid: number | null;
 }
 
 // ------- Helpers -------
@@ -128,72 +113,91 @@ function findNearestProvince(lat: number, lon: number): string {
   return minDist < 100 ? nearest : 'default';
 }
 
+/** Sort stations by distance from a point and return with distance */
+function sortStationsByDistance(
+  stations: WarroomStation[],
+  lat: number,
+  lon: number
+): (WarroomStation & { distance: number })[] {
+  return stations
+    .map(s => ({ ...s, distance: haversineDistance(lat, lon, s.lat, s.lon) }))
+    .sort((a, b) => a.distance - b.distance);
+}
+
 // ------- Main fetch function -------
 
-export const fetchAirQuality = async (): Promise<{ current: AQIData; forecast: ForecastItem[] }> => {
+export const fetchAirQuality = async (): Promise<{
+  current: AQIData;
+  forecast: ForecastItem[];
+  nearbyStations: (WarroomStation & { distance: number })[];
+  allStations: WarroomStation[];
+}> => {
   try {
     // Step 1: Get user location
     const { lat, lon, geolocated } = await getUserLocation();
 
-    // Step 2: Fetch PM2.5 at user location + all provinces (in parallel)
-    const [locationRes, provinceRes] = await Promise.all([
-      fetch(`${GISTDA_LOCATION_URL}?lat=${lat}&lng=${lon}`),
-      fetch(`${GISTDA_PROVINCE_URL}`),
-    ]);
+    // Step 2: Fetch all stations from Warroom API
+    const timestamp = Date.now();
+    const response = await fetch(`${DUST_API_URL}?t=${timestamp}`);
+    if (!response.ok) throw new Error(`Warroom API HTTP ${response.status}`);
 
-    if (!locationRes.ok) throw new Error(`Location API HTTP ${locationRes.status}`);
-    if (!provinceRes.ok) throw new Error(`Province API HTTP ${provinceRes.status}`);
+    const allStations: WarroomStation[] = await response.json();
+    if (!Array.isArray(allStations) || allStations.length === 0) {
+      throw new Error('Warroom API returned no station data');
+    }
 
-    const locationData: GISTDALocationResponse = await locationRes.json();
-    const provinceData: GISTDAProvinceResponse = await provinceRes.json();
+    // Step 3: Find nearest station to user's location
+    const sorted = sortStationsByDistance(allStations, lat, lon);
+    const nearest = sorted[0];
 
-    if (locationData.status !== 200) throw new Error(locationData.errMsg || 'Location API error');
-    if (provinceData.status !== 200) throw new Error(provinceData.errMsg || 'Province API error');
-
-    // Step 3: Find user's province from province list (nearest match by coordinates)
+    // Step 4: Find user's province
     const nearestProvinceName = findNearestProvince(lat, lon);
 
-    // Find province data for display info
-    const userProvince = provinceData.data.find(p => p.pv_tn === nearestProvinceName);
-    const provinceName = userProvince?.pv_tn || nearestProvinceName;
-    const provinceNameEn = userProvince?.pv_en || '';
-
-    // Step 4: Build current AQI data
-    const pm25Value = Math.round(locationData.data.pm25 * 10) / 10;
+    // Step 5: Build current AQI data from nearest station
+    const pm25Value = Math.round(nearest.pm25 * 10) / 10;
     const aqi = pm25ToAQI(pm25Value);
 
     const current: AQIData = {
       aqi,
-      city: provinceName === 'default' ? 'ประเทศไทย' : provinceName,
-      stationName: provinceNameEn || provinceName,
+      city: nearestProvinceName === 'default' ? 'ประเทศไทย' : nearestProvinceName,
+      stationName: nearest.name,
       status: getStatusFromAQI(aqi),
       pm25: pm25Value,
-      pm10: 0, // GISTDA doesn't provide PM10
-      temperature: 0, // GISTDA doesn't provide temperature
-      humidity: 0, // GISTDA doesn't provide humidity
+      pm10: 0,
+      temperature: nearest.temp ?? 0,
+      humidity: nearest.humid ?? 0,
       lastUpdated: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
-      backgroundImageUrl: LOCATION_IMAGES[provinceName] || LOCATION_IMAGES['default'],
+      backgroundImageUrl: LOCATION_IMAGES[nearestProvinceName] || LOCATION_IMAGES['default'],
       isGeolocated: geolocated,
     };
 
-    // Step 5: Build forecast from 24hr history
-    const history = locationData.data.graphHistory24hrs || [];
-    // Take last few hours as forecast items
-    const recentHistory = history.slice(-6);
-    const forecast: ForecastItem[] = recentHistory.map(([pm25Val, timestamp]) => {
-      const time = new Date(timestamp);
-      const hourStr = time.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-      const histAqi = pm25ToAQI(pm25Val);
+    // Step 6: Build "nearby stations" as forecast-like data (closest stations within 50km)
+    // Deduplicate by station name — keep only the closest instance of each name
+    const seenNames = new Set<string>();
+    const nearbyStations = sorted
+      .filter(s => s.distance <= 50)
+      .filter(s => {
+        if (seenNames.has(s.name)) return false;
+        seenNames.add(s.name);
+        return true;
+      })
+      .slice(0, 8);
+    const forecast: ForecastItem[] = nearbyStations.map((station) => {
+      const stAqi = pm25ToAQI(station.pm25);
+      // Shorten station name for display
+      const shortName = station.name.length > 15
+        ? station.name.substring(0, 15) + '…'
+        : station.name;
       return {
-        time: hourStr,
-        aqi: histAqi,
-        status: getStatusFromAQI(histAqi),
+        time: shortName,
+        aqi: stAqi,
+        status: getStatusFromAQI(stAqi),
       };
     });
 
-    return { current, forecast };
+    return { current, forecast, nearbyStations, allStations };
   } catch (error) {
-    console.error('Error fetching air quality from GISTDA:', error);
+    console.error('Error fetching air quality from CCDC:', error);
     throw error;
   }
 };

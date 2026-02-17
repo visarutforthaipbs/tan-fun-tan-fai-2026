@@ -14,6 +14,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api\/podfoon/, ''),
         },
+        '/api/dust': {
+          target: 'https://warroom.pro',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/dust/, '/api/dust_proxy.php'),
+        },
       },
     },
     plugins: [react()],
